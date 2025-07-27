@@ -15,6 +15,8 @@ To add this package to your project, use this:
 // Change the formatting function with `backrefs.with(format: l => ...)` to your liking.
 #show: backrefs
 
+...
+
 #bibliography("refs.bib")
 ```
 
@@ -25,8 +27,5 @@ To add this package to your project, use this:
 
 ## Usage
 
-See the [manual]("docs/docs.pdf") for details.
+See the [manual](docs/docs.pdf) for details.
 
-## License
-
-...
