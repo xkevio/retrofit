@@ -10,7 +10,12 @@ categories = ["Model", "Thesis"]
 keywords = ["bibliography", "citation", "reference", "backreference"]
 compiler = "0.13.0"
 exclude = [
+  "docs",
+  "images",
+  "plugin",
+  "tests",
   "justfile",
   "scripts",
-  "*.pdf"
+  "*.pdf",
+  ".gitignore"
 ]
