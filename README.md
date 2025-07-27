@@ -1,8 +1,8 @@
 # `retrofit`
 
-This package adds backreferences to each of your bibliography entries. More precisely, `retrofit` queries for all instances of a citation in your document, collects the page(s) it is on and formats them to your liking, while keeping them the `link` element to the location.
+This package adds backreferences to each of your bibliography entries. More precisely, `retrofit` queries for all instances of a citation in your document, collects the page(s) it is on and formats them to your liking, while keeping them in the `link` element to the location.
 
-In order to correctly associate each formatted backreference to the bibliography entry, `retrofit` uses Typst's own internal bibliography handling through [hayagriva](https://github.com/typst/hayagriva) to ensure correct citation ordering.
+In order to correctly associate each formatted backreference to the bibliography entry, `retrofit` uses Typst's own internal bibliography handling through [hayagriva](https://github.com/typst/hayagriva) to ensure correct citation ordering (Typst still renders its own bibliography, we just append to its entries!).
 
 ## Getting Started
 
@@ -20,10 +20,16 @@ To add this package to your project, use this:
 #bibliography("refs.bib")
 ```
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./ieee-dark.svg">
-  <img src="./ieee-light.svg">
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./images/ieee-dark.svg">
+    <img src="./images/ieee-light.svg">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./images/apa-dark.svg">
+    <img src="./images/apa-light.svg">
+  </picture>
+</p>
 
 ## Usage
 

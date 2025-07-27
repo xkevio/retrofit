@@ -37,7 +37,7 @@
     let keys = query(ref.where(element: none)).dedup().map(r => str(r.target))
     let sources = bib.sources.map(s => {
       if type(s) == str {
-        read(s)
+        read(s) // FIXME: relative paths dont work yet...
       } else {
         str(s)
       }
