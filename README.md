@@ -22,7 +22,7 @@ To add this package to your project, use this:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./ieee-dark.svg">
-  <img src="./ieee.svg">
+  <img src="./ieee-light.svg">
 </picture>
 
 ## Usage
