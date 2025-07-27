@@ -1,0 +1,16 @@
+[package]
+name = "retrofit"
+version = "0.1.0"
+entrypoint = "src/lib.typ"
+authors = ["Kevin Kulot <@xkevio>"]
+license = "0BSD"
+description = "Adds clickable backreferences to each bibliography entry, enabling custom formatting of all cited pages."
+repository = "https://github.com/xkevio/retrofit"
+categories = ["Model", "Thesis"]
+keywords = ["bibliography", "citation", "reference", "backreference"]
+compiler = "0.13.0"
+exclude = [
+  "justfile",
+  "scripts",
+  "*.pdf"
+]
