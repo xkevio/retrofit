@@ -14,6 +14,10 @@
 /// It does this by looking for all instances of a citation, collecting the pages
 /// it is on and correctly assigns them to each bibliography entry.
 ///
+/// === Example
+/// ```typ
+/// #show: backrefs.with(format: l => [Cited on page(s) #l.join(", ")])
+/// ```
 /// -> content
 #let backrefs(
   /// Specifies how the links to the pages should be styled.
