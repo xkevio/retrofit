@@ -9,6 +9,7 @@
   format(links)
 }
 
+
 /// Using `backrefs` in a show-rule enables backreferences for each entry.
 ///
 /// It does this by looking for all instances of a citation, collecting the pages
@@ -16,7 +17,10 @@
 ///
 /// === Example
 /// ```typ
-/// #show: backrefs.with(format: l => [Cited on page(s) #l.join(", ")])
+/// #show: backrefs.with(
+///   format: l => [Cited on page(s) #l.join(", ")],
+///   read: path => read(path),
+/// )
 /// ```
 /// -> content
 #let backrefs(
@@ -25,6 +29,12 @@
   ///
   /// -> function
   format: links => [*(#links.join(", "))*],
+  /// Specifies a function to process the `path` parameter of `#bibliography`.
+  /// Pass ```typc path => read(path)``` to read the contents of the bibliography.
+  ///
+  /// _(This is currently needed for correctly resolving relative paths!)_
+  /// -> function
+  read: none,
   doc,
 ) = {
   assert.eq(
@@ -37,7 +47,7 @@
     let keys = query(ref.where(element: none)).dedup().map(r => str(r.target))
     let sources = bib.sources.map(s => {
       if type(s) == str {
-        read(s) // FIXME: relative paths dont work yet...
+        read(s)
       } else {
         str(s)
       }

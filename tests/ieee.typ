@@ -3,7 +3,7 @@
 #set page(width: 15cm, height: auto)
 #set par(justify: true)
 
-#show: backrefs
+#show: backrefs.with(read: path => read(path))
 
 @Dobrushina
 @newsviews
@@ -13,4 +13,4 @@
 @DuweLMSF0B020
 @Dobrushina
 
-#bibliography("/tests/refs.bib")
+#bibliography("refs.bib")

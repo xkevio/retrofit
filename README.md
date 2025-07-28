@@ -11,9 +11,15 @@ To add this package to your project, use this:
 ```typ
 #import "@preview/retrofit:0.1.0": backrefs
 
-// Default formatting wraps pages in parentheses and makes them bold.
-// Change the formatting function with `backrefs.with(format: l => ...)` to your liking.
-#show: backrefs
+/*
+  Default formatting wraps pages in parentheses and makes them bold.
+
+  When reading in a relative path to a bibliography file, a special
+  `read` functon has to be provided, see the manual for details.
+
+  Change the formatting function with `backrefs.with(format: l => ...)` to your liking.
+*/
+#show: backrefs.with(read: path => read(path))
 
 ...
 
