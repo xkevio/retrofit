@@ -13,13 +13,15 @@ To add this package to your project, use this:
 
 /*
   Default formatting wraps pages in parentheses and makes them bold.
+  Change the formatting with `backrefs.with(format: l => ...)` to your liking.
 
   When reading in a relative path to a bibliography file, a special
-  `read` functon has to be provided, see the manual for details.
-
-  Change the formatting function with `backrefs.with(format: l => ...)` to your liking.
+  `read` function has to be provided, see the manual for details.
 */
-#show: backrefs.with(read: path => read(path))
+#show: backrefs.with(
+  format: links => text(gray)[(Cited on p. #links.join(", ", last: " and "))],
+  read: path => read(path),
+)
 
 ...
 
