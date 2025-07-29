@@ -4,6 +4,9 @@ This package adds backreferences to each of your bibliography entries. More prec
 
 In order to correctly associate each formatted backreference to the bibliography entry, `retrofit` uses Typst's own internal bibliography handling through [hayagriva](https://github.com/typst/hayagriva) to ensure correct citation ordering (Typst still renders its own bibliography, we just append to its entries!).
 
+> [!WARNING]
+> Performance may be impacted somewhat due to the creation of an internal bibliography through WebAssembly!
+
 ## Getting Started
 
 To add this package to your project, use this:
@@ -31,11 +34,11 @@ To add this package to your project, use this:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/ieee-dark.svg">
-    <img src="./images/ieee-light.svg" width="49.5%">
+    <img src="./images/ieee-light.svg" width="47%">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/apa-dark.svg">
-    <img src="./images/apa-light.svg" width="49.5%">
+    <img src="./images/apa-light.svg" width="50%">
   </picture>
 </p>
 
