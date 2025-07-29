@@ -9,7 +9,6 @@
   format(links)
 }
 
-
 /// Using `backrefs` in a show-rule enables backreferences for each entry.
 ///
 /// It does this by looking for all instances of a citation, collecting the pages
@@ -94,10 +93,17 @@
       }
     }
 
+    // Provide bibliography heading body via metadata.
+    show heading: it => [#it#metadata(it.body)<bib-heading>]
     // Non-grid based styles (blocks with v-spacing), such as APA.
     show block: it => {
-      if it.sticky or it.body == auto { return it } // todo: see if this is solid.
       if not it.has("label") {
+        // If we detected the bibliography heading, skip styling.
+        if query(<bib-heading>).first().value == it.body {
+          return it
+        }
+
+        _bib-counter.step()
         let modified-body = (
           it.body
             + " "
@@ -106,7 +112,6 @@
               _cited-pages(format: format, label(sorted-keys.at(idx)))
             }
         )
-        _bib-counter.step()
 
         let fields = it.fields()
         let _ = fields.remove("body")
