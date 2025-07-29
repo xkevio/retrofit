@@ -1,6 +1,6 @@
 #import "../src/lib.typ": backrefs
 
-#set page(width: 15cm, height: auto)
+#set page(width: 15cm, height: auto, margin: 1cm, fill: none)
 #set par(justify: true)
 
 #show: backrefs.with(
@@ -9,11 +9,13 @@
 )
 
 @Dobrushina
-@newsviews
+@Wilde2019
 
 #pagebreak()
 
 @DuweLMSF0B020
 @Dobrushina
+
+#pagebreak()
 
 #bibliography("refs.bib", style: "apa")

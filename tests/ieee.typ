@@ -1,16 +1,18 @@
 #import "../src/lib.typ": backrefs
 
-#set page(width: 15cm, height: auto)
+#set page(width: 15cm, height: auto, margin: 1cm)
 #set par(justify: true)
 
 #show: backrefs.with(read: path => read(path))
 
 @Dobrushina
-@newsviews
+@Wilde2019
 
 #pagebreak()
 
 @DuweLMSF0B020
 @Dobrushina
+
+#pagebreak()
 
 #bibliography("refs.bib")

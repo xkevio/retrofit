@@ -31,11 +31,11 @@ To add this package to your project, use this:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/ieee-dark.svg">
-    <img src="./images/ieee-light.svg">
+    <img src="./images/ieee-light.svg" width="49.5%">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/apa-dark.svg">
-    <img src="./images/apa-light.svg">
+    <img src="./images/apa-light.svg" width="49.5%">
   </picture>
 </p>
 

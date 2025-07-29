@@ -97,6 +97,7 @@
     show heading: it => [#it#metadata(it.body)<bib-heading>]
     // Non-grid based styles (blocks with v-spacing), such as APA.
     show block: it => {
+      if it.body == auto { return it }
       if not it.has("label") {
         // If we detected the bibliography heading, skip styling.
         if query(<bib-heading>).first().value == it.body {
