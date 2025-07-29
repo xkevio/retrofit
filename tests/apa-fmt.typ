@@ -1,6 +1,6 @@
 #import "../src/lib.typ": backrefs
 
-#set page(width: 15cm, height: auto, margin: 1cm, fill: none)
+#set page(width: 15cm, height: auto, margin: 1cm)
 #set par(justify: true)
 
 #show: backrefs.with(
