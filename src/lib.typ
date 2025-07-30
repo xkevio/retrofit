@@ -1,12 +1,9 @@
 #let _wasm-bib = plugin("retrofit.wasm")
 #let _bib-counter = counter("bib-counter")
-#let _cited-pages(
-  format: links => [*(#links.join(", "))*],
-  key,
-) = context {
+#let _cited-pages(format, key) = context {
   let pages = query(ref.where(target: key)).map(r => r.location())
   let links = pages.map(p => link(p, str(p.page())))
-  format(links)
+  if pages.len() > 0 { format(links) }
 }
 
 /// Using `backrefs` in a show-rule enables backreferences for each entry.
@@ -28,7 +25,7 @@
   ///
   /// -> function
   format: links => [*(#links.join(", "))*],
-  /// Specifies a function to process the `path` parameter of `#bibliography`.
+  /// Specifies a function to process the `path` and `style` parameters of `#bibliography`.
   /// Pass ```typc path => read(path)``` to read the contents of the bibliography.
   ///
   /// _(This is currently needed for correctly resolving relative paths!)_
@@ -52,11 +49,18 @@
       }
     })
 
+    // Read in CSL content if necessary.
+    let (style, style-format) = if bib.style.ends-with(".csl") {
+      (read(style), "csl")
+    } else {
+      (bib.style, "text")
+    }
+
     let sorted-keys = str(_wasm-bib.sorted_bib_keys(
       bytes(sources.join("%%%")),
       bytes(if bib.full { "true" } else { "false" }),
-      bytes(bib.style),
-      bytes(if bib.style.ends-with(".csl") { "csl" } else { "text" }),
+      bytes(style),
+      bytes(style-format),
       bytes(text.lang),
       bytes(keys.join(",")),
     )).split()
@@ -76,7 +80,7 @@
                   + " "
                   + context {
                     let idx = _bib-counter.get().first() - 1
-                    _cited-pages(format: format, label(sorted-keys.at(idx)))
+                    _cited-pages(format, label(sorted-keys.at(idx)))
                   }
               )
             } else {
@@ -110,7 +114,7 @@
             + " "
             + context {
               let idx = _bib-counter.get().first() - 1
-              _cited-pages(format: format, label(sorted-keys.at(idx)))
+              _cited-pages(format, label(sorted-keys.at(idx)))
             }
         )
 
