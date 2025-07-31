@@ -5,7 +5,7 @@ This package adds backreferences to each of your bibliography entries. More prec
 In order to correctly associate each formatted backreference to the bibliography entry, `retrofit` uses Typst's own internal bibliography handling through [hayagriva](https://github.com/typst/hayagriva) to ensure correct citation ordering (Typst still renders its own bibliography, we just append to its entries!).
 
 > [!WARNING]
-> Performance may be impacted somewhat due to the creation of an internal bibliography through WebAssembly!
+> Performance may be impacted somewhat due to the creation of an internal bibliography through WebAssembly! Use with caution and check for correctness!
 
 ## Getting Started
 

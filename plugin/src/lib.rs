@@ -1,6 +1,6 @@
 use core::str;
 
-use anyhow::{bail, Result};
+use anyhow::{anyhow, bail, Result};
 use hayagriva::{
     archive::{locales, ArchivedStyle},
     citationberg::{IndependentStyle, LocaleCode, Style},
@@ -13,6 +13,7 @@ initiate_protocol!();
 
 /// Generates a `Rendered` hayagriva bibliography object based on the given arguments.
 /// - `bib` represents the contents of either a BibTeX file, hayagriva YAML file or `bytes`.
+/// - `formats` consists of the bibliography types for faster parsing, such as "bib" or "yml".
 /// - `full` represents whether to include all works from the given bibliography files.
 /// - `style` may either represent the raw text of the given CSL style or its `ArchivedName`.
 /// - `style_format` should be `csl | text` to tell the function what to do with `style`.
@@ -20,6 +21,7 @@ initiate_protocol!();
 /// - `cited` should contain all used citations even when `full: true`.
 pub(crate) fn generate_bibliography(
     bib: &[&str],
+    formats: &[&str],
     full: bool,
     style: &str,
     style_format: &str,
@@ -27,28 +29,35 @@ pub(crate) fn generate_bibliography(
     cited: &[&str],
 ) -> Result<Rendered> {
     // Merge multiple bibliographies into one, be it BibTeX or YAML format.
-    let bib = bib.iter().try_fold(Library::new(), |mut acc, s| {
-        if let Ok(library) = from_yaml_str(s).or_else(|_| from_biblatex_str(s)) {
-            for entry in library {
-                acc.push(&entry);
-            }
-        } else {
-            bail!("Error while reading bibliography: Cannot detect valid BibTeX or YAML schema.");
-        }
+    let bib =
+        bib.iter()
+            .enumerate()
+            .try_fold(Library::new(), |mut acc, (i, s)| -> Result<Library> {
+                let library = match formats[i] {
+                    "bib" => from_biblatex_str(s).map_err(|e| anyhow!("{e:?}"))?,
+                    "yml" => from_yaml_str(s)?,
+                    "bytes" => from_biblatex_str(s).or_else(|_| from_yaml_str(s))?,
+                    _ => unreachable!(),
+                };
 
-        Ok(acc)
-    })?;
+                for entry in library {
+                    acc.push(&entry);
+                }
+
+                Ok(acc)
+            })?;
 
     // If `style_format` is "csl", we expect Typst to pass the raw file contents for us,
     // as we cannot read from the filesystem as a WASM application. Otherwise, use `archive`.
     let style = if style_format == "csl" {
         IndependentStyle::from_xml(style)?
     } else {
-        let Style::Independent(indep) = ArchivedStyle::by_name(style).unwrap().get() else {
-            bail!("Invalid independent style: Could not find {style}!");
-        };
-
-        indep
+        let archived_style =
+            ArchivedStyle::by_name(style).ok_or(anyhow!("Could not find {style}"))?;
+        match archived_style.get() {
+            Style::Independent(indep) => indep,
+            _ => bail!("Invalid independent style: {style} is dependent!"),
+        }
     };
 
     let locales = locales();
@@ -96,6 +105,7 @@ pub(crate) fn generate_bibliography(
 #[wasm_func]
 pub fn sorted_bib_keys(
     bib: &[u8],
+    formats: &[u8],
     full: &[u8],
     style: &[u8],
     style_format: &[u8],
@@ -104,11 +114,12 @@ pub fn sorted_bib_keys(
 ) -> Result<Vec<u8>> {
     let sources = str::from_utf8(bib)?.split("%%%").collect::<Vec<_>>();
     let cited = str::from_utf8(cited)?.split(',').collect::<Vec<_>>();
-    let full = str::from_utf8(full)?.parse()?;
+    let formats = str::from_utf8(formats)?.split(',').collect::<Vec<_>>();
 
     let rendered_bib = generate_bibliography(
         &sources,
-        full,
+        &formats,
+        str::from_utf8(full)?.parse()?,
         str::from_utf8(style)?,
         str::from_utf8(style_format)?,
         str::from_utf8(lang)?,

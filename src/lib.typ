@@ -41,6 +41,13 @@
 
   show bibliography: bib => {
     let keys = query(ref.where(element: none)).dedup().map(r => str(r.target))
+    let formats = bib.sources.map(s => {
+      // @typstyle off
+      if type(s) == bytes { "bytes" }
+      else if s.ends-with(regex("ya?ml")) { "yml" }
+      else { "bib" }
+    })
+
     let sources = bib.sources.map(s => {
       if type(s) == str {
         read(s)
@@ -58,6 +65,7 @@
 
     let sorted-keys = str(_wasm-bib.sorted_bib_keys(
       bytes(sources.join("%%%")),
+      bytes(formats.join(",")),
       bytes(if bib.full { "true" } else { "false" }),
       bytes(style),
       bytes(style-format),
