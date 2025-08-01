@@ -2,7 +2,7 @@
 #let _bib-counter = counter("bib-counter")
 #let _cited-pages(format, key) = context {
   let pages = query(ref.where(target: key)).map(r => r.location())
-  let links = pages.map(p => link(p, str(p.page())))
+  let links = pages.dedup(key: p => p.page()).map(p => link(p, str(counter(page).at(p).first())))
   if pages.len() > 0 { format(links) }
 }
 
@@ -58,7 +58,7 @@
 
     // Read in CSL content if necessary.
     let (style, style-format) = if bib.style.ends-with(".csl") {
-      (read(style), "csl")
+      (read(bib.style), "csl")
     } else {
       (bib.style, "text")
     }
