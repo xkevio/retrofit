@@ -12,7 +12,7 @@ In order to correctly associate each formatted backreference to the bibliography
 To add this package to your project, use this:
 
 ```typ
-#import "@preview/retrofit:0.1.1": backrefs
+#import "@preview/retrofit:0.1.2": backrefs
 
 /*
   Default formatting wraps pages in parentheses and makes them bold.

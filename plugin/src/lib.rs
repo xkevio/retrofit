@@ -66,8 +66,7 @@ pub(crate) fn generate_bibliography(
 
     // Add all found citations in the document to the driver.
     for key in cited {
-        let entry = bib.get(key);
-        if let Some(entry) = entry {
+        if let Some(entry) = bib.get(key) {
             let items = vec![CitationItem::with_entry(entry)];
             driver.citation(CitationRequest::new(
                 items,
@@ -76,8 +75,6 @@ pub(crate) fn generate_bibliography(
                 &locales,
                 None,
             ));
-        } else {
-            bail!("Cannot find {key} in bibliography file");
         }
     }
 
