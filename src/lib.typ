@@ -1,7 +1,7 @@
 #let _wasm-bib = plugin("retrofit.wasm")
 #let _bib-counter = counter("bib-counter")
 #let _cited-pages(format, key) = context {
-  let pages = query(ref.where(target: key)).map(r => r.location())
+  let pages = query(<__cite>).filter(m => m.value == key).map(r => r.location())
   let links = pages.dedup(key: p => p.page()).map(p => link(p, str(counter(page).at(p).first())))
   if pages.len() > 0 { format(links) }
 }
@@ -39,8 +39,9 @@
     message: "Please specify a function to turn the backreferences into markup!",
   )
 
+  show cite: it => [#metadata(it.key)<__cite>] + it
   show bibliography: bib => {
-    let keys = query(ref.where(element: none)).dedup().map(r => str(r.target))
+    let keys = query(<__cite>).map(m => str(m.value)).dedup()
     let formats = bib.sources.map(s => {
       // @typstyle off
       if type(s) == bytes { "bytes" }

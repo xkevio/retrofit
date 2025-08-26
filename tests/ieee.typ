@@ -6,7 +6,7 @@
 #show: backrefs.with(read: path => read(path))
 
 @Dobrushina
-@Wilde2019
+#cite(<Wilde2019>)
 
 #pagebreak()
 
