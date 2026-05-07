@@ -74,38 +74,22 @@
       bytes(keys.join(",")),
     )).split()
 
+    // --- GRID-BASED --- //
+
     // Grid-based styles, such as IEEE.
-    show grid: it => {
-      if not it.has("label") {
-        // Modify every second child which represents the entry itself.
-        let modified-children = it
-          .children
-          .enumerate()
-          .map(((i, c)) => {
-            if calc.odd(i) {
-              _bib-counter.step()
-              (
-                c
-                  + " "
-                  + context {
-                    let idx = _bib-counter.get().first() - 1
-                    _cited-pages(format, label(sorted-keys.at(idx)))
-                  }
-              )
-            } else {
-              c
-            }
-          })
+    show grid.cell.where(x: 1): it => {
+      _bib-counter.step()
 
-        let fields = it.fields()
-        let _ = fields.remove("children")
-
-        [#grid(..fields, ..modified-children)<grid>]
-      } else {
-        it
+      let citations = context {
+        let idx = _bib-counter.get().first() - 1  
+        _cited-pages(format, label(sorted-keys.at(idx)))
       }
+
+      it.body + " " + citations
     }
 
+    // --- BLOCK-BASED --- //
+    
     // Provide bibliography heading body via metadata.
     show heading: it => [#it#metadata(it.body)<bib-heading>]
     // Non-grid based styles (blocks with v-spacing), such as APA.

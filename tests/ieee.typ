@@ -15,4 +15,4 @@
 
 #pagebreak()
 
-#bibliography("refs.bib")
+#bibliography("refs.bib", style: "ieee")
