@@ -74,69 +74,41 @@
       bytes(keys.join(",")),
     )).split()
 
-    // Grid-based styles, such as IEEE.
-    show grid: it => {
-      if not it.has("label") {
-        // Modify every second child which represents the entry itself.
-        let modified-children = it
-          .children
-          .enumerate()
-          .map(((i, c)) => {
-            if calc.odd(i) {
-              _bib-counter.step()
-              (
-                c
-                  + " "
-                  + context {
-                    let idx = _bib-counter.get().first() - 1
-                    _cited-pages(format, label(sorted-keys.at(idx)))
-                  }
-              )
-            } else {
-              c
-            }
-          })
+    // Track the highest-numbered entry seen so we can append a trailing
+    // backref for the last entry (which has no following [N+1] to anchor on).
+    let _last-n = state("retrofit-last-n", 0)
 
-        let fields = it.fields()
-        let _ = fields.remove("children")
-
-        [#grid(..fields, ..modified-children)<grid>]
-      } else {
-        it
-      }
-    }
-
-    // Provide bibliography heading body via metadata.
-    show heading: it => [#it#metadata(it.body)<bib-heading>]
-    // Non-grid based styles (blocks with v-spacing), such as APA.
-    show block: it => {
-      if it.body == auto { return it }
-      if not it.has("label") {
-        // If we detected the bibliography heading, skip styling.
-        if query(<bib-heading>).first().value == it.body {
-          return it
-        }
-
-        _bib-counter.step()
-        let modified-body = (
-          it.body
-            + " "
-            + context {
-              let idx = _bib-counter.get().first() - 1
-              _cited-pages(format, label(sorted-keys.at(idx)))
-            }
-        )
-
-        let fields = it.fields()
-        let _ = fields.remove("body")
-
-        [#block(..fields, modified-body)<block>]
+    // Numbered styles (IEEE, GB-7714, etc.): in typst >= 0.14 each entry
+    // is no longer wrapped in its own grid row or block — bibliography
+    // renders as one block of flowing text. But every entry still begins
+    // with a standalone text element matching the literal pattern `[N]`,
+    // which we use as the entry boundary anchor.
+    //
+    // Strategy: when we see `[N]` for N >= 2, prepend the backref for
+    // entry N-1 (which sits immediately before this label in the flow).
+    // For the final entry, append after `bib` renders. A zero-width-space
+    // sentinel marks already-processed text to prevent show-rule recursion.
+    show text: it => {
+      let m = it.text.match(regex("^\[(\d+)\]$"))
+      if m == none { return it }
+      let n = int(m.captures.first())
+      _last-n.update(prev => calc.max(prev, n))
+      if n >= 2 and n - 1 <= sorted-keys.len() {
+        _cited-pages(format, label(sorted-keys.at(n - 2))) + it
       } else {
         it
       }
     }
 
     bib
+
+    // Append backref for the last numbered entry.
+    context {
+      let n = _last-n.get()
+      if n >= 1 and n <= sorted-keys.len() {
+        _cited-pages(format, label(sorted-keys.at(n - 1)))
+      }
+    }
   }
 
   doc
