@@ -85,7 +85,7 @@
         _cited-pages(format, label(sorted-keys.at(idx)))
       }
 
-      it.body + " " + citations
+      it + " " + citations
     }
 
     // --- BLOCK-BASED --- //
