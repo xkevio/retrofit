@@ -11,6 +11,7 @@
 /// It does this by looking for all instances of a citation, collecting the pages
 /// it is on and correctly assigns them to each bibliography entry.
 ///
+///
 /// === Example
 /// ```typ
 /// #show: backrefs.with(
@@ -18,18 +19,13 @@
 ///   read: path => read(path),
 /// )
 /// ```
+///
+/// - format (function): The formatting function for page links. Expects an array of `link` as input and `content` as output.
+/// - read (function): The read closure for resolving relative paths of path strings.
+///
 /// -> content
 #let backrefs(
-  /// Specifies how the links to the pages should be styled.
-  /// The function takes an array of `link` as input and expects some markup as output.
-  ///
-  /// -> function
   format: links => [*(#links.join(", "))*],
-  /// Specifies a function to process the `path` and `style` parameters of `#bibliography`.
-  /// Pass ```typc path => read(path)``` to read the contents of the bibliography.
-  ///
-  /// _(This is currently needed for correctly resolving relative paths!)_
-  /// -> function
   read: none,
   doc,
 ) = {
@@ -42,31 +38,32 @@
   show cite: it => [#metadata(it.key)<__cite>] + it
   show bibliography: bib => {
     let keys = query(<__cite>).map(m => str(m.value)).dedup()
-    let formats = bib.sources.map(s => {
-      // @typstyle off
-      if type(s) == bytes { "bytes" }
-      else if s.ends-with(regex("ya?ml")) { "yml" }
-      else { "bib" }
-    })
-
+    // Convert sources to stringified variant for all possible types.
     let sources = bib.sources.map(s => {
       if type(s) == str {
         read(s)
+      } else if type(s) == path {
+        std.read(s)
       } else {
         str(s)
       }
     })
 
     // Read in CSL content if necessary.
-    let (style, style-format) = if bib.style.ends-with(".csl") {
-      (read(bib.style), "csl")
+    let (style, style-format) = if type(bib.style) == str {
+      if bib.style.ends-with(".csl") {
+        (read(bib.style), "csl")
+      } else {
+        (bib.style, "text")
+      }
+    } else if type(bib.style) == path {
+      (std.read(bib.style), "csl")
     } else {
       (bib.style, "text")
     }
 
     let sorted-keys = str(_wasm-bib.sorted_bib_keys(
       bytes(sources.join("%%%")),
-      bytes(formats.join(",")),
       bytes(if bib.full { "true" } else { "false" }),
       bytes(style),
       bytes(style-format),
@@ -81,7 +78,7 @@
       _bib-counter.step()
 
       let citations = context {
-        let idx = _bib-counter.get().first() - 1  
+        let idx = _bib-counter.get().first() - 1
         _cited-pages(format, label(sorted-keys.at(idx)))
       }
 
@@ -89,7 +86,7 @@
     }
 
     // --- BLOCK-BASED --- //
-    
+
     // Provide bibliography heading body via metadata.
     show heading: it => [#it#metadata(it.body)<bib-heading>]
     // Non-grid based styles (blocks with v-spacing), such as APA.

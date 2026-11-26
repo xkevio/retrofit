@@ -1,11 +1,11 @@
 use core::str;
 
-use anyhow::{anyhow, bail, Result};
+use anyhow::{Result, anyhow, bail};
 use hayagriva::{
-    archive::{locales, ArchivedStyle},
+    BibliographyDriver, BibliographyRequest, CitationItem, CitationRequest, Library, Rendered,
+    archive::{ArchivedStyle, locales},
     citationberg::{IndependentStyle, LocaleCode, Style},
     io::{from_biblatex_str, from_yaml_str},
-    BibliographyDriver, BibliographyRequest, CitationItem, CitationRequest, Library, Rendered,
 };
 use wasm_minimal_protocol::*;
 
@@ -13,7 +13,6 @@ initiate_protocol!();
 
 /// Generates a `Rendered` hayagriva bibliography object based on the given arguments.
 /// - `bib` represents the contents of either a BibTeX file, hayagriva YAML file or `bytes`.
-/// - `formats` consists of the bibliography types for faster parsing, such as "bib" or "yml".
 /// - `full` represents whether to include all works from the given bibliography files.
 /// - `style` may either represent the raw text of the given CSL style or its `ArchivedName`.
 /// - `style_format` should be `csl | text` to tell the function what to do with `style`.
@@ -21,7 +20,6 @@ initiate_protocol!();
 /// - `cited` should contain all used citations even when `full: true`.
 pub(crate) fn generate_bibliography(
     bib: &[&str],
-    formats: &[&str],
     full: bool,
     style: &str,
     style_format: &str,
@@ -29,23 +27,17 @@ pub(crate) fn generate_bibliography(
     cited: &[&str],
 ) -> Result<Rendered> {
     // Merge multiple bibliographies into one, be it BibTeX or YAML format.
-    let bib =
-        bib.iter()
-            .enumerate()
-            .try_fold(Library::new(), |mut acc, (i, s)| -> Result<Library> {
-                let library = match formats[i] {
-                    "bib" => from_biblatex_str(s).map_err(|e| anyhow!("{e:?}"))?,
-                    "yml" => from_yaml_str(s)?,
-                    "bytes" => from_biblatex_str(s).or_else(|_| from_yaml_str(s))?,
-                    _ => unreachable!(),
-                };
+    let bib = bib
+        .iter()
+        .try_fold(Library::new(), |mut acc, s| -> Result<Library> {
+            let library = from_biblatex_str(s).or_else(|_| from_yaml_str(s))?;
 
-                for entry in library {
-                    acc.push(&entry);
-                }
+            for entry in library {
+                acc.push(&entry);
+            }
 
-                Ok(acc)
-            })?;
+            Ok(acc)
+        })?;
 
     // If `style_format` is "csl", we expect Typst to pass the raw file contents for us,
     // as we cannot read from the filesystem as a WASM application. Otherwise, use `archive`.
@@ -102,7 +94,6 @@ pub(crate) fn generate_bibliography(
 #[wasm_func]
 pub fn sorted_bib_keys(
     bib: &[u8],
-    formats: &[u8],
     full: &[u8],
     style: &[u8],
     style_format: &[u8],
@@ -111,11 +102,9 @@ pub fn sorted_bib_keys(
 ) -> Result<Vec<u8>> {
     let sources = str::from_utf8(bib)?.split("%%%").collect::<Vec<_>>();
     let cited = str::from_utf8(cited)?.split(',').collect::<Vec<_>>();
-    let formats = str::from_utf8(formats)?.split(',').collect::<Vec<_>>();
 
     let rendered_bib = generate_bibliography(
         &sources,
-        &formats,
         str::from_utf8(full)?.parse()?,
         str::from_utf8(style)?,
         str::from_utf8(style_format)?,
