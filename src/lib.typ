@@ -9,7 +9,11 @@
 /// Using `backrefs` in a show-rule enables backreferences for each entry.
 ///
 /// It does this by looking for all instances of a citation, collecting the pages
-/// it is on and correctly assigns them to each bibliography entry.
+/// it is on and correctly assigns them to each bibliography entry. In order to read
+/// the entries, a custom `read`-closure must be provided when using relative path strings.
+///
+/// If the entries are provided using the `path` type, or via `bytes`, this parameter
+/// may be omitted entirely. This also applies to the citation style.
 ///
 ///
 /// === Example
