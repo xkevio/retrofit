@@ -1,6 +1,6 @@
-#let _wasm-bib = plugin("retrofit.wasm")
-#let _bib-counter = counter("bib-counter")
-#let _cited-pages(format, key) = context {
+#let __retrofit = plugin("retrofit.wasm")
+#let __bib-counter = counter("bib-counter")
+#let __cited-pages(format, key) = context {
   let pages = query(<__cite>).filter(m => m.value == key).map(r => r.location())
   let links = pages.dedup(key: p => p.page()).map(p => link(p, str(counter(page).at(p).first())))
   if pages.len() > 0 { format(links) }
@@ -15,7 +15,7 @@
 /// === Example
 /// ```typ
 /// #show: backrefs.with(
-///   format: l => [Cited on page(s) #l.join(", ")],
+///   format: p => [Cited on page(s) #p.join(", ")],
 ///   read: path => read(path),
 /// )
 /// ```
@@ -32,12 +32,16 @@
   assert.eq(
     type(format),
     function,
-    message: "Please specify a function to turn the backreferences into markup!",
+    message: "found " + str(type(format)) + ", expected formatting function (array => content)",
   )
 
   show cite: it => [#metadata(it.key)<__cite>] + it
   show bibliography: bib => {
     let keys = query(<__cite>).map(m => str(m.value)).dedup()
+    if keys.len() == 0 {
+      return bib
+    }
+    
     // Convert sources to stringified variant for all possible types.
     let sources = bib.sources.map(s => {
       if type(s) == str {
@@ -62,7 +66,7 @@
       (bib.style, "text")
     }
 
-    let sorted-keys = str(_wasm-bib.sorted_bib_keys(
+    let sorted-keys = str(__retrofit.sorted_bib_keys(
       bytes(sources.join("%%%")),
       bytes(if bib.full { "true" } else { "false" }),
       bytes(style),
@@ -75,11 +79,11 @@
 
     // Grid-based styles, such as IEEE.
     show grid.cell.where(x: 1): it => {
-      _bib-counter.step()
+      __bib-counter.step()
 
       let citations = context {
-        let idx = _bib-counter.get().first() - 1
-        _cited-pages(format, label(sorted-keys.at(idx)))
+        let idx = __bib-counter.get().first() - 1
+        __cited-pages(format, label(sorted-keys.at(idx)))
       }
 
       it + " " + citations
@@ -98,13 +102,13 @@
           return it
         }
 
-        _bib-counter.step()
+        __bib-counter.step()
         let modified-body = (
           it.body
             + " "
             + context {
-              let idx = _bib-counter.get().first() - 1
-              _cited-pages(format, label(sorted-keys.at(idx)))
+              let idx = __bib-counter.get().first() - 1
+              __cited-pages(format, label(sorted-keys.at(idx)))
             }
         )
 

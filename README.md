@@ -12,15 +12,10 @@ In order to correctly associate each formatted backreference to the bibliography
 To add this package to your project, use this:
 
 ```typ
-#import "@preview/retrofit:0.2.0": backrefs
+#import "@preview/retrofit:0.3.0": backrefs
 
-/*
-  Default formatting wraps pages in parentheses and makes them bold.
-  Change the formatting with `backrefs.with(format: l => ...)` to your liking.
-
-  When reading in a relative path to a bibliography file, a special
-  `read` function has to be provided, see the manual for details.
-*/
+// When reading in a relative path string to a bibliography file, a special
+// `read` function has to be provided, see the manual for details.
 #show: backrefs.with(
   format: links => text(gray)[(Cited on p. #links.join(", ", last: " and "))],
   read: path => read(path),
