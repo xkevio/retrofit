@@ -12,15 +12,10 @@ In order to correctly associate each formatted backreference to the bibliography
 To add this package to your project, use this:
 
 ```typ
-#import "@preview/retrofit:0.2.0": backrefs
+#import "@preview/retrofit:0.3.0": backrefs
 
-/*
-  Default formatting wraps pages in parentheses and makes them bold.
-  Change the formatting with `backrefs.with(format: l => ...)` to your liking.
-
-  When reading in a relative path to a bibliography file, a special
-  `read` function has to be provided, see the manual for details.
-*/
+// When reading in a relative path string to a bibliography file, a special
+// `read` function has to be provided, see the manual for details.
 #show: backrefs.with(
   format: links => text(gray)[(Cited on p. #links.join(", ", last: " and "))],
   read: path => read(path),
@@ -34,11 +29,11 @@ To add this package to your project, use this:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/ieee-dark.svg">
-    <img src="./images/ieee-light.svg" width="47%">
+    <img src="./images/ieee-light.svg" width="50%" alt="An example of the cited pages for the IEEE style.">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/apa-dark.svg">
-    <img src="./images/apa-light.svg" width="50%">
+    <img src="./images/apa-light.svg" width="47.5%" alt="An example of the cited pages for the APA style.">
   </picture>
 </p>
 

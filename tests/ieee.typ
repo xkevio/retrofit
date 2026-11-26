@@ -1,9 +1,11 @@
 #import "../src/lib.typ": backrefs
+#let theme = sys.inputs.at("theme", default: "light")
 
-#set page(width: 15cm, height: auto, margin: 1cm)
+#set page(width: 15cm, height: auto, margin: 1cm, fill: if theme == "dark" { none })
+#set text(white) if theme == "dark"
 #set par(justify: true)
 
-#show: backrefs.with(read: path => read(path))
+#show: backrefs
 
 @Dobrushina
 #cite(<Wilde2019>)
@@ -15,4 +17,4 @@
 
 #pagebreak()
 
-#bibliography("refs.bib", style: "ieee")
+#bibliography(path("refs.bib"), style: "ieee")
