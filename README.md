@@ -29,11 +29,11 @@ To add this package to your project, use this:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/ieee-dark.svg">
-    <img src="./images/ieee-light.svg" width="50%">
+    <img src="./images/ieee-light.svg" width="50%" alt="An example of the cited pages for the IEEE style.">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/apa-dark.svg">
-    <img src="./images/apa-light.svg" width="47.5%">
+    <img src="./images/apa-light.svg" width="47.5%" alt="An example of the cited pages for the APA style.">
   </picture>
 </p>
 
